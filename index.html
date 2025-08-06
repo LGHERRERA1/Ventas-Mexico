@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Ventas 2025 QC México</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Configuración de Tailwind para usar la nueva paleta de colores
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'steel-blue': '#6886af',
+                        'dusty-rose': '#d7adbe',
+                        'mauve': '#ab94b0',
+                        'lapis-blue': '#116594',
+                        'dark-indigo': '#242d62',
+                        'purple-navy': '#585387',
+                        'light-steel-blue': '#adb7dc',
+                        'periwinkle': '#b6c6db',
+                        'rose-taupe': '#82465c',
+                        'cadet-rose': '#c56477',
+                        'off-white': '#e5ebdc',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Un gris muy claro para el fondo */
+        }
+        .professional-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        /* Estilo para las filas de la tabla (efecto cebra) */
+        #summary-table-body tr:nth-child(even) {
+            background-color: #b6c6db; /* Color periwinkle */
+        }
+        #summary-table-body tr:nth-child(odd) {
+            background-color: #FFFFFF;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-10">
+        <header class="mb-8 border-b border-gray-200 pb-6">
+            <h1 class="text-3xl font-bold text-dark-indigo">Análisis Ventas 2025 QC México</h1>
+        </header>
+
+        <main class="space-y-12">
+            <!-- Stacked Bar Chart by Client -->
+            <section id="client-chart-section">
+                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Ventas Mensuales Totales por Cliente</h2>
+                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
+                    <canvas id="stackedClientChart"></canvas>
+                </div>
+            </section>
+
+            <hr class="border-gray-200">
+
+            <!-- Stacked Bar Chart by Type -->
+            <section id="type-chart-section">
+                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Ventas Mensuales Totales por Tipo de Producto</h2>
+                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
+                    <canvas id="stackedTypeChart"></canvas>
+                </div>
+            </section>
+
+            <hr class="border-gray-200">
+            
+             <!-- Comparison Chart: Actual vs Potential by Client -->
+            <section id="comparison-chart-section">
+                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Comparativa por Cliente: Real (Julio 2025) vs. Potencial</h2>
+                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </section>
+
+            <hr class="border-gray-200">
+
+             <!-- Comparison Chart: Actual vs Potential by Type -->
+            <section id="comparison-type-chart-section">
+                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Comparativa por Producto: Real vs. Escenarios Potenciales</h2>
+                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
+                    <canvas id="comparisonTypeChart"></canvas>
+                </div>
+            </section>
+
+            <hr class="border-gray-200">
+
+            <!-- Data Table Section -->
+            <section id="data-table-section">
+                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Resumen de Ventas Potenciales por Cliente y Producto (Ton/Mes)</h2>
+                <div class="overflow-x-auto rounded-lg shadow">
+                    <table class="professional-table w-full text-left">
+                        <thead class="bg-dark-indigo text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider w-[22%]">Cliente</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">maquila ADBS</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">maquila LESS</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">ADBS</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">SLES 70</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">SLES 28</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">SLS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-table-body" class="text-gray-700">
+                            <!-- JS will populate this -->
+                        </tbody>
+                        <tfoot class="bg-periwinkle">
+                           <tr id="summary-table-footer" class="font-bold text-dark-indigo text-base">
+                                <!-- JS will populate this -->
+                           </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Raw CSV data provided by the user
+        const csvData = `
+"Nro documento","Fecha","Cliente","Referencia","TIPO","Ton"
+"FEV-00000001","17/01/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","10"
+"FEV-00000002","20/01/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000003","22/01/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000004","23/01/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","15"
+"FEV-00000005","24/01/2025","HJB","ASL-MHJB","LAS Maquila","36"
+"FEV-00000006","28/01/2025","HJB","ASL-MHJB","LAS Maquila","37"
+"FEV-00000007","28/01/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000008","30/01/2025","FENIXCHEM","ASL-QC01","LAS","20"
+"FEV-00000009","30/01/2025","CARE SAGA","ASL-QC01","LAS","10"
+"FEV-00000010","30/01/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000011","31/01/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000012","31/01/2025","HJB","ASL-MHJB","LAS Maquila","36"
+"FEV-00000013","7/02/2025","TRASPECIALTIES","ASL-QC01","LAS","21"
+"FEV-00000014","7/02/2025","TRASPECIALTIES","SULPHEX-702-N-G","LESS 70","20"
+"FEV-00000015","7/02/2025","TRASPECIALTIES","SULPHEX-702-N-G","LESS 70","20"
+"FEV-00000017","10/02/2025","TRASPECIALTIES","SULPHEX-702-N-G","LESS 70","20"
+"FEV-00000018","11/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000019","11/02/2025","TRASPECIALTIES","ASL-QC01","LAS","36"
+"FEV-00000020","12/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000021","14/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000022","15/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000023","15/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000024","17/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000025","18/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000026","18/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000027","18/02/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000030","25/02/2025","MCASSAB","SULPHEX-702-N-G","LESS 70","5"
+"FEV-00000033","25/02/2025","PRODUCTOS KIMIMAR","ASL-QC01","LAS","20"
+"FEV-00000034","1/03/2025","HJB","ASL-MHJB","LAS Maquila","24"
+"FEV-00000035","5/03/2025","SAFA","ASL-QC01","LAS","10"
+"FEV-00000036","5/03/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000037","9/03/2025","FENIXCHEM","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000038","11/03/2025","PRODUCTOS KIMIMAR","ASL-QC01","LAS","35"
+"FEV-00000039","11/03/2025","BEAUTY ARMOUR","ASL-QC01","LAS","35"
+"FEV-00000041","13/03/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000042","13/03/2025","BEAUTY ARMOUR","SULPHEX-702-N-G","LESS 70","2"
+"FEV-00000043","14/03/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000044","14/03/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","15"
+"FEV-00000045","18/03/2025","STAR PRODUCTS","ASL-QC01","LAS","2"
+"FEV-00000046","19/03/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000047","26/03/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","16"
+"FEV-00000048","26/03/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","16"
+"FEV-00000049","27/03/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000050","27/03/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000051","28/03/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000052","28/03/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","7"
+"FEV-00000053","28/03/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000054","29/03/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000055","29/03/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000056","1/04/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000057","1/04/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","36"
+"FEV-00000058","1/04/2025","FENIXCHEM","SULPHEX-282-N-D","LESS 28","36"
+"FEV-00000059","3/04/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","2"
+"FEV-00000060","3/04/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","0"
+"FEV-00000061","3/04/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000062","3/04/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000063","4/04/2025","SAFA","ASL-QC01","LAS","10"
+"FEV-00000064","9/04/2025","BEAUTY ARMOUR","ASL-QC01","LAS","35"
+"FEV-00000065","9/04/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000066","10/04/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000067","10/04/2025","CARE SAGA","SULPHEX-282-N-D","LESS 28","5"
+"FEV-00000069","11/04/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000070","14/04/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000071","15/04/2025","HJB","ASL-MHJB","LAS Maquila","30"
+"FEV-00000072","20/04/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000073","22/04/2025","QUIMICA VAID","ASL-QC01","LAS","20"
+"FEV-00000074","24/04/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000075","26/04/2025","PRODUCTOS KIMIMAR","ASL-QC01","LAS","35"
+"FEV-00000076","26/04/2025","QUIMICA ANFA","ASL-QC01","LAS","10"
+"FEV-00000081","29/04/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000082","29/04/2025","MCASSAB","SULPHEX-282-N-D","LESS 28","20"
+"FEV-00000083","30/04/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000084","30/04/2025","ALEN DEL NORTE","ASL-QC01","LAS","2"
+"FEV-00000085","2/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","34"
+"FEV-00000086","2/05/2025","ECJ","ASL-QC01","LAS","10"
+"FEV-00000087","2/05/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000088","2/05/2025","FENIXCHEM","ASL-QC01","LAS","35"
+"FEV-00000089","3/05/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000090","3/05/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","19"
+"FEV-00000091","3/05/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000092","5/05/2025","DISAN MEXICO","ASL-QC01","LAS","17"
+"FEV-00000093","5/05/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000094","6/05/2025","BEAUTY ARMOUR","ASL-QC01","LAS","35"
+"FEV-00000095","8/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","10"
+"FEV-00000096","10/05/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000097","11/05/2025","QUIMICA VAID","ASL-QC01","LAS","30"
+"FEV-00000098","13/05/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000099","14/05/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000100","15/05/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000101","15/05/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000102","16/05/2025","QUIMICA VAID","ASL-QC01","LAS","30"
+"FEV-00000103","16/05/2025","STAR PRODUCTS","ASL-QC01","LAS","2"
+"FEV-00000104","20/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000106","20/05/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000107","20/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","2"
+"FEV-00000108","21/05/2025","ECJ","ASL-QC01","LAS","15"
+"FEV-00000109","21/05/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000110","22/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","2"
+"FEV-00000111","22/05/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000112","23/05/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000113","24/05/2025","SAFA","ASL-QC01","LAS","10"
+"FEV-00000114","26/05/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000115","27/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000116","27/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000117","28/05/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000118","28/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","37"
+"FEV-00000119","29/05/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000120","29/05/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000122","30/05/2025","QUIMICA ANFA","ASL-QC01","LAS","10"
+"FEV-00000124","2/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000125","2/06/2025","QUIMICA VAID","ASL-QC01","LAS","20"
+"FEV-00000127","3/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000128","3/06/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000129","4/06/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000130","5/06/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","35"
+"FEV-00000131","5/06/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000132","5/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000133","5/06/2025","QUIMICA VAID","ASL-QC01","LAS","15"
+"FEV-00000134","6/06/2025","MCASSAB","SULPHEX-702-N-G","LESS 70","5"
+"FEV-00000135","6/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000136","6/06/2025","HJB","ASL-MHJB","LAS Maquila","30"
+"FEV-00000137","6/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000138","7/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","21"
+"FEV-00000139","7/06/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000140","9/06/2025","PRODUCTOS KIMIMAR","ASL-QC01","LAS","35"
+"FEV-00000141","10/06/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000142","10/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000143","13/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000144","14/06/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000145","16/06/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000146","17/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","10"
+"FEV-00000147","17/06/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000149","18/06/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000150","18/06/2025","ECJ","ASL-QC01","LAS","20"
+"FEV-00000151","19/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000152","20/06/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","36"
+"FEV-00000153","21/06/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000154","21/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","36"
+"FEV-00000155","23/06/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000156","23/06/2025","QUIMICA VAID","ASL-QC01","LAS","15"
+"FEV-00000157","23/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","34"
+"FEV-00000158","23/06/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","9"
+"FEV-00000159","24/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000160","24/06/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","35"
+"FEV-00000161","24/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","36"
+"FEV-00000162","25/06/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000163","25/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000164","26/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000165","26/06/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000166","26/06/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000167","27/06/2025","QUIMICA ANFA","ASL-QC01","LAS","10"
+"FEV-00000168","27/06/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000171","27/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000172","28/06/2025","QUIMICA VAID","SULPHEX-282-N-D","LESS 28","20"
+"FEV-00000173","28/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000174","30/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000175","30/06/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000176","30/06/2025","QUIMICA VAID","ASL-QC01","LAS","20"
+"FEV-00000177","30/06/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","16"
+"FEV-00000187","7/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000208","16/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000225","25/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000233","30/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
+"FEV-00000185","3/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000188","7/07/2025","BEAUTY ARMOUR","ASL-QC01","LAS","20"
+"FEV-00000190","7/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000205","15/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000211","17/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","36"
+"FEV-00000221","22/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000226","25/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000228","28/07/2025","BEAUTY ARMOUR","ASL-QC01","LAS","20"
+"FEV-00000236","31/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000195","9/07/2025","CQ CENTENARIO","ASL-QC01","LAS","20"
+"FEV-00000215","21/07/2025","CQ CENTENARIO","ASL-QC01","LAS","20"
+"FEV-00000231","29/07/2025","CQ CENTENARIO","ASL-QC01","LAS","15"
+"FEV-00000183","3/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000198","10/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000200","11/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000203","14/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000214","18/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000217","21/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000224","24/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000229","28/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000237","31/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000230","29/07/2025","GRUPO AGUAVIENTO","ASL-QC01","LAS","10"
+"FEV-00000179","2/07/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","36"
+"FEV-00000181","3/07/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","36"
+"FEV-00000180","2/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000182","3/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000184","3/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000186","4/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000191","8/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000192","8/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000193","8/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000194","9/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000196","9/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","13"
+"FEV-00000199","10/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000201","11/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000202","14/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000204","14/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000207","15/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000216","21/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000219","22/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
+"FEV-00000220","22/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000222","23/07/2025","HJB","ASL-MHJB","LAS Maquila","21"
+"FEV-00000223","23/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","12"
+"FEV-00000197","10/07/2025","PRODUCTOS KIMIMAR","ASL-QC01","LAS","35"
+"FEV-00000178","2/07/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000189","7/07/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000209","17/07/2025","QUIMICA ANFA","ASL-QC01","LAS","10"
+"FEV-00000210","17/07/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000227","26/07/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000234","30/07/2025","QUIMICA PLATA","ASL-QC01","LAS","20"
+"FEV-00000212","18/07/2025","QUIMICA VAID","ASL-QC01","LAS","18"
+"FEV-00000218","22/07/2025","QUIMICA VAID","ASL-QC01","LAS","20"
+"FEV-00000235","31/07/2025","QUIMICA VAID","ASL-QC01","LAS","15"
+"FEV-00000232","29/07/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000206","15/07/2025","STAR PRODUCTS","ASL-QC01","LAS","2"
+`;
+        const summaryData = [
+            { client: 'HJB', maquilaAdbs: 500, maquilaLess: 480, adbs: 0, sles70: 0, sles28: 0, sls: 0 },
+            { client: 'COLGATE PALMOLIVE', maquilaAdbs: 0, maquilaLess: 0, adbs: 160, sles70: 38, sles28: 0, sls: 416.7 },
+            { client: 'AGUAVIENTO', maquilaAdbs: 0, maquilaLess: 0, adbs: 20, sles70: 600, sles28: 0, sls: 0 },
+            { client: 'UNILEVER', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 500, sles28: 0, sls: 0 },
+            { client: 'ALEN', maquilaAdbs: 0, maquilaLess: 0, adbs: 200, sles70: 200, sles28: 0, sls: 140 },
+            { client: 'ECJ', maquilaAdbs: 0, maquilaLess: 0, adbs: 34, sles70: 0, sles28: 300, sls: 0 },
+            { client: 'BEAUTY ARMOUR', maquilaAdbs: 0, maquilaLess: 0, adbs: 40, sles70: 0, sles28: 250, sls: 20 },
+            { client: 'QUIMICA ANFA', maquilaAdbs: 0, maquilaLess: 0, adbs: 40, sles70: 0, sles28: 250, sls: 0 },
+            { client: 'QUIMICA VAID', maquilaAdbs: 0, maquilaLess: 0, adbs: 70, sles70: 0, sles28: 100, sls: 0 },
+            { client: 'SAFA', maquilaAdbs: 0, maquilaLess: 0, adbs: 35, sles70: 0, sles28: 35, sls: 0 },
+            { client: 'KIMMAR', maquilaAdbs: 0, maquilaLess: 0, adbs: 70, sles70: 0, sles28: 0, sls: 0 },
+            { client: 'HARMONY CHEM', maquilaAdbs: 60, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 0, sls: 0 },
+            { client: 'ORBIA', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 0, sls: 41.7 },
+            { client: 'GRUPO HADA', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 40, sles28: 0, sls: 0 }
+        ];
+        
+        // --- NEW SCENARIO 2 DATA ---
+        const scenario2Data = {
+            'maquila ADBS': 0,
+            'maquila LESS': 0, // Assuming 0 as it's not specified
+            'ADBS': 400,
+            'SLES 70': 650,
+            'SLES 28': 840,
+            'SLS': 250
+        };
+
+        let stackedClientChart, stackedTypeChart, comparisonChart, comparisonTypeChart;
+
+        // --- NEW COLOR PALETTE ---
+        const colorPalette = {
+            skyBlue: '#49a6c6',
+            offWhite: '#e5ebdc',
+            deepPurple: '#57436d',
+            grayGreen: '#99aba0',
+            indigo: '#5d5592',
+            turquoise: '#5ed8d3',
+            oliveGreen: '#7a8c75',
+            sageGreen: '#b4b69c',
+            lavenderPurple: '#b494c4',
+            steelTeal: '#6b8a8b',
+            lapisBlue: '#116594',
+            darkIndigo: '#242d62',
+            roseTaupe: '#82465c',
+            cadetRose: '#c56477',
+            grey: '#95a5a6',
+        };
+
+        /**
+         * Normalizes client names to ensure consistency across datasets.
+         */
+        function normalizeClientName(name) {
+            const nameMap = {
+                'ALEN DEL NORTE': 'ALEN',
+                'GRUPO ALEN': 'ALEN',
+                'GRUPO AGUAVIENTO': 'AGUAVIENTO',
+                'PRODUCTOS KIMIMAR': 'KIMMAR'
+            };
+            return nameMap[name] || name;
+        }
+
+        /**
+         * Parses a date string in "D/M/YYYY" or "DD/MM/YYYY" format to a Date object.
+         */
+        function parseDate(dateString) {
+            const parts = dateString.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        
+        /**
+         * Creates a canvas pattern with a solid background color and diagonal hatch lines.
+         */
+        function createHatchedBackground(bgColor, hatchColor = 'rgba(0,0,0,0.4)', hatchWidth = 2) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const size = 10;
+            canvas.width = size;
+            canvas.height = size;
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, size, size);
+            ctx.strokeStyle = hatchColor;
+            ctx.lineWidth = hatchWidth;
+            ctx.beginPath();
+            ctx.moveTo(0, size);
+            ctx.lineTo(size, 0);
+            ctx.stroke();
+            return ctx.createPattern(canvas, 'repeat');
+        }
+
+        // Custom plugin to draw total labels on top of stacked bars
+        const totalLabelsPlugin = {
+            id: 'totalLabels',
+            afterDatasetsDraw(chart, args, options) {
+                const { ctx, data, scales: { y } } = chart;
+                ctx.save();
+                const totals = data.labels.map((label, i) => 
+                    data.datasets.reduce((sum, dataset) => sum + (dataset.data[i] || 0), 0)
+                );
+                ctx.font = 'bold 14px Inter';
+                ctx.fillStyle = colorPalette.deepPurple;
+                ctx.textAlign = 'center';
+                chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                    const total = totals[index];
+                    if (total > 0) {
+                         const yPos = y.getPixelForValue(total) - 5;
+                         ctx.fillText(Math.round(total).toLocaleString(), bar.x, yPos);
+                    }
+                });
+                ctx.restore();
+            }
+        };
+
+        /**
+         * Generic data processing function.
+         */
+        function getSalesData() {
+             const rows = csvData.trim().split('\n');
+            const headers = rows[0].split(',').map(h => h.replace(/"/g, ''));
+            const dataRows = rows.slice(1);
+            return dataRows.map(row => {
+                const values = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(v => v.replace(/"/g, ''));
+                const entry = {};
+                headers.forEach((header, i) => {
+                    let value = values[i];
+                    if (header === 'Ton') value = parseFloat(value) || 0;
+                    else if (header === 'Fecha') value = parseDate(value);
+                    else if (header === 'Cliente') value = normalizeClientName(values[i]);
+                    else value = values[i];
+                    entry[header] = value;
+                });
+                return entry;
+            });
+        }
+        
+        /**
+         * Renders the chart for sales by client.
+         */
+        function renderClientChart(sales) {
+            const ctx = document.getElementById('stackedClientChart');
+            if (!ctx) return;
+
+            const clientTotals = sales.reduce((acc, sale) => {
+                acc[sale.Cliente] = (acc[sale.Cliente] || 0) + sale.Ton;
+                return acc;
+            }, {});
+            
+            const sortedClients = Object.keys(clientTotals).sort((a, b) => clientTotals[b] - clientTotals[a]);
+            const topClients = sortedClients.slice(0, 8);
+
+            const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6 };
+            const monthKeys = [...new Set(sales.map(sale => {
+                const monthAbbr = sale.Fecha.toLocaleString('es-ES', { month: 'short' }).replace(/\./g, '');
+                return monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1);
+            }))].sort((a, b) => monthOrder[a] - monthOrder[b]);
+
+            const clientDataMap = {};
+            [...topClients, 'Otros'].forEach(client => {
+                clientDataMap[client] = Array(monthKeys.length).fill(0);
+            });
+
+            sales.forEach(sale => {
+                const monthAbbr = sale.Fecha.toLocaleString('es-ES', { month: 'short' }).replace(/\./g, '');
+                const monthKey = monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1);
+                const monthIndex = monthKeys.indexOf(monthKey);
+                if (monthIndex === -1) return;
+                const clientName = topClients.includes(sale.Cliente) ? sale.Cliente : 'Otros';
+                clientDataMap[clientName][monthIndex] += sale.Ton;
+            });
+            
+            const clientColorMap = {
+                'HJB': colorPalette.skyBlue, 
+                'BEAUTY ARMOUR': colorPalette.turquoise, 
+                'QUIMICA ANFA': colorPalette.lavenderPurple,
+                'HARMONY CHEM': colorPalette.indigo, 
+                'ECJ': colorPalette.deepPurple, 
+                'QUIMICA VAID': colorPalette.steelTeal,
+                'SAFA': colorPalette.sageGreen, 
+                'ALEN': colorPalette.oliveGreen, 
+                'Otros': colorPalette.grayGreen
+            };
+            
+            const datasets = Object.keys(clientDataMap).map((client) => ({
+                label: client,
+                data: clientDataMap[client],
+                backgroundColor: clientColorMap[client] || colorPalette.grey,
+            }));
+
+            const chartData = { labels: monthKeys, datasets };
+
+            stackedClientChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                plugins: [totalLabelsPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { tooltip: { mode: 'point', intersect: true } },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: { display: true, text: 'Toneladas Vendidas', font: {size: 14}, color: colorPalette.deepPurple },
+                            ticks: { font: { size: 14 }, color: colorPalette.deepPurple }
+                        }
+                    },
+                }
+            });
+        }
+
+        /**
+         * Renders the chart for sales by product type.
+         */
+        function renderTypeChart(sales) {
+            const ctx = document.getElementById('stackedTypeChart');
+            if (!ctx) return;
+
+            const typeOrder = ['LAS Maquila', 'LESS 70 Maquila', 'LESS 28', 'LAS', 'LESS 70'];
+            const allDefinedTypes = new Set(typeOrder);
+
+            const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6 };
+            const monthKeys = [...new Set(sales.map(sale => {
+                const monthAbbr = sale.Fecha.toLocaleString('es-ES', { month: 'short' }).replace(/\./g, '');
+                return monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1);
+            }))].sort((a, b) => monthOrder[a] - monthOrder[b]);
+
+            const typeDataMap = {};
+            [...typeOrder, 'Otros'].forEach(type => {
+                typeDataMap[type] = Array(monthKeys.length).fill(0);
+            });
+
+            sales.forEach(sale => {
+                const monthAbbr = sale.Fecha.toLocaleString('es-ES', { month: 'short' }).replace(/\./g, '');
+                const monthKey = monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1);
+                const monthIndex = monthKeys.indexOf(monthKey);
+                if (monthIndex === -1) return;
+                const typeName = allDefinedTypes.has(sale.TIPO) ? sale.TIPO : 'Otros';
+                typeDataMap[typeName][monthIndex] += sale.Ton;
+            });
+            
+            const chartColors = [
+                colorPalette.deepPurple, 
+                colorPalette.indigo, 
+                colorPalette.skyBlue, 
+                colorPalette.turquoise, 
+                colorPalette.oliveGreen, 
+                colorPalette.sageGreen
+            ];
+            
+            const datasets = Object.keys(typeDataMap).map((type, i) => {
+                const color = chartColors[i % chartColors.length];
+                let finalBackgroundColor = color;
+                if (type.includes('Maquila')) {
+                    finalBackgroundColor = createHatchedBackground(color);
+                }
+                return {
+                    label: type,
+                    data: typeDataMap[type],
+                    backgroundColor: finalBackgroundColor,
+                };
+            });
+
+            const chartData = { labels: monthKeys, datasets };
+
+            stackedTypeChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                plugins: [totalLabelsPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { tooltip: { mode: 'point', intersect: true } },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: { display: true, text: 'Toneladas Vendidas', font: {size: 14}, color: colorPalette.deepPurple },
+                            ticks: { font: { size: 14 }, color: colorPalette.deepPurple }
+                        }
+                    },
+                }
+            });
+        }
+        
+        /**
+         * Renders the comparison chart: Actual July sales vs Potential sales by Client.
+         */
+        function renderComparisonChart(sales) {
+            const ctx = document.getElementById('comparisonChart');
+            if (!ctx) return;
+
+            const julySales = sales.filter(s => s.Fecha.getMonth() === 6 && s.Fecha.getFullYear() === 2025);
+            const julySalesByClient = julySales.reduce((acc, sale) => {
+                acc[sale.Cliente] = (acc[sale.Cliente] || 0) + sale.Ton;
+                return acc;
+            }, {});
+
+            const potentialSalesByClient = {};
+            summaryData.forEach(clientData => {
+                const totalPotential = clientData.maquilaAdbs + clientData.maquilaLess + clientData.adbs + clientData.sles70 + clientData.sles28 + clientData.sls;
+                const clientName = normalizeClientName(clientData.client);
+                potentialSalesByClient[clientName] = totalPotential;
+            });
+
+            const commonClients = Object.keys(potentialSalesByClient)
+                .filter(client => julySalesByClient[client])
+                .sort((a,b) => potentialSalesByClient[b] - potentialSalesByClient[a]);
+            
+            const potentialOnlyClients = Object.keys(potentialSalesByClient)
+                .filter(client => !julySalesByClient[client])
+                .sort((a,b) => potentialSalesByClient[b] - potentialSalesByClient[a]);
+
+            const displayOrder = [...commonClients, ...potentialOnlyClients];
+
+            const clientColorMap = {
+                'HJB': colorPalette.skyBlue,
+                'COLGATE PALMOLIVE': colorPalette.cadetRose,
+                'AGUAVIENTO': colorPalette.turquoise,
+                'UNILEVER': colorPalette.lapisBlue,
+                'ALEN': colorPalette.sageGreen, 
+                'ECJ': colorPalette.darkIndigo, 
+                'BEAUTY ARMOUR': colorPalette.roseTaupe, 
+                'QUIMICA ANFA': colorPalette.oliveGreen,
+                'QUIMICA VAID': colorPalette.lavenderPurple,
+                'SAFA': colorPalette.steelTeal, 
+                'KIMMAR': colorPalette.deepPurple,
+                'HARMONY CHEM': colorPalette.indigo,
+                'ORBIA': colorPalette.grey,
+                'GRUPO HADA': colorPalette.dustyRose,
+                'Otros': colorPalette.grey
+            };
+            const fallbackColors = Object.values(colorPalette);
+            let colorIndex = 0;
+
+            const datasets = displayOrder.map(client => {
+                const color = clientColorMap[client] || fallbackColors[colorIndex++ % fallbackColors.length];
+                const actualSales = julySalesByClient[client] || 0;
+                const potentialSales = potentialSalesByClient[client] || 0;
+                
+                return {
+                    label: client,
+                    data: [actualSales, potentialSales],
+                    backgroundColor: color,
+                };
+            });
+
+            const chartData = {
+                labels: ['Ventas Reales (Julio 2025)', 'Ventas Potenciales (Objetivo)'],
+                datasets: datasets
+            };
+
+            comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                plugins: [totalLabelsPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        tooltip: { 
+                            mode: 'point', 
+                            intersect: true 
+                        } 
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: { display: true, text: 'Toneladas Vendidas', font: {size: 14}, color: colorPalette.deepPurple },
+                            ticks: { font: { size: 14 }, color: colorPalette.deepPurple }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Renders the comparison chart by product type.
+         */
+        function renderComparisonTypeChart(sales) {
+            const ctx = document.getElementById('comparisonTypeChart');
+            if (!ctx) return;
+
+            const julySales = sales.filter(s => s.Fecha.getMonth() === 6 && s.Fecha.getFullYear() === 2025);
+            
+            const actuals = {
+                'maquila ADBS': julySales.filter(s => s.TIPO === 'LAS Maquila').reduce((sum, s) => sum + s.Ton, 0),
+                'maquila LESS': julySales.filter(s => s.TIPO === 'LESS 70 Maquila').reduce((sum, s) => sum + s.Ton, 0),
+                'ADBS': julySales.filter(s => s.TIPO === 'LAS').reduce((sum, s) => sum + s.Ton, 0),
+                'SLES 70': julySales.filter(s => s.TIPO === 'LESS 70').reduce((sum, s) => sum + s.Ton, 0),
+                'SLES 28': julySales.filter(s => s.TIPO === 'LESS 28').reduce((sum, s) => sum + s.Ton, 0),
+                'SLS': 0
+            };
+
+            const potentials = {
+                'maquila ADBS': summaryData.reduce((sum, d) => sum + d.maquilaAdbs, 0),
+                'maquila LESS': summaryData.reduce((sum, d) => sum + d.maquilaLess, 0),
+                'ADBS': summaryData.reduce((sum, d) => sum + d.adbs, 0),
+                'SLES 70': summaryData.reduce((sum, d) => sum + d.sles70, 0),
+                'SLES 28': summaryData.reduce((sum, d) => sum + d.sles28, 0),
+                'SLS': summaryData.reduce((sum, d) => sum + d.sls, 0)
+            };
+            
+            const productTypes = ['maquila ADBS', 'maquila LESS', 'ADBS', 'SLES 70', 'SLES 28', 'SLS'];
+            const typeColors = [
+                colorPalette.deepPurple, 
+                colorPalette.indigo, 
+                colorPalette.skyBlue, 
+                colorPalette.turquoise, 
+                colorPalette.oliveGreen, 
+                colorPalette.sageGreen
+            ];
+
+            const datasets = productTypes.map((type, index) => {
+                let bgColor = typeColors[index % typeColors.length];
+                if (type.includes('maquila')) {
+                    bgColor = createHatchedBackground(bgColor);
+                }
+                return {
+                    label: type,
+                    data: [
+                        actuals[type] || 0,
+                        scenario2Data[type] || 0,
+                        potentials[type] || 0
+                    ],
+                    backgroundColor: bgColor
+                }
+            });
+
+            const chartData = {
+                labels: ['Ventas Reales (Julio 2025)', 'Escenario 2 (Inversión)', 'Ventas Potenciales (Objetivo)'],
+                datasets: datasets
+            };
+
+            comparisonTypeChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                plugins: [totalLabelsPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        tooltip: { 
+                            mode: 'point',
+                            intersect: true 
+                        } 
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: { display: true, text: 'Toneladas Vendidas', font: {size: 14}, color: colorPalette.deepPurple },
+                            ticks: { font: { size: 14 }, color: colorPalette.deepPurple }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Renders the summary data table.
+         */
+        function renderSummaryTable() {
+            const tableBody = document.getElementById('summary-table-body');
+            const tableFooter = document.getElementById('summary-table-footer');
+            if (!tableBody || !tableFooter) return;
+            
+            let totalMaquilaAdbs = 0, totalMaquilaLess = 0, totalAdbs = 0, totalSles70 = 0, totalSles28 = 0, totalSls = 0;
+
+            tableBody.innerHTML = summaryData
+                .sort((a, b) => {
+                    const totalA = a.maquilaAdbs + a.maquilaLess + a.adbs + a.sles70 + a.sles28 + a.sls;
+                    const totalB = b.maquilaAdbs + b.maquilaLess + b.adbs + b.sles70 + b.sles28 + b.sls;
+                    return totalB - totalA;
+                })
+                .map(row => {
+                    totalMaquilaAdbs += row.maquilaAdbs;
+                    totalMaquilaLess += row.maquilaLess;
+                    totalAdbs += row.adbs;
+                    totalSles70 += row.sles70;
+                    totalSles28 += row.sles28;
+                    totalSls += row.sls;
+
+                    return `
+                    <tr class="text-base">
+                        <td class="px-4 py-2 font-medium text-deep-purple">${row.client}</td>
+                        <td class="px-4 py-2 text-right">${Math.round(row.maquilaAdbs).toLocaleString()}</td>
+                        <td class="px-4 py-2 text-right">${Math.round(row.maquilaLess).toLocaleString()}</td>
+                        <td class="px-4 py-2 text-right">${Math.round(row.adbs).toLocaleString()}</td>
+                        <td class="px-4 py-2 text-right">${Math.round(row.sles70).toLocaleString()}</td>
+                        <td class="px-4 py-2 text-right">${Math.round(row.sles28).toLocaleString()}</td>
+                        <td class="px-4 py-2 text-right">${Math.round(row.sls).toLocaleString()}</td>
+                    </tr>
+                `}).join('');
+
+            tableFooter.innerHTML = `
+                <td class="p-4">Total</td>
+                <td class="p-4 text-right">${Math.round(totalMaquilaAdbs).toLocaleString()}</td>
+                <td class="p-4 text-right">${Math.round(totalMaquilaLess).toLocaleString()}</td>
+                <td class="p-4 text-right">${Math.round(totalAdbs).toLocaleString()}</td>
+                <td class="p-4 text-right">${Math.round(totalSles70).toLocaleString()}</td>
+                <td class="p-4 text-right">${Math.round(totalSles28).toLocaleString()}</td>
+                <td class="p-4 text-right">${Math.round(totalSls).toLocaleString()}</td>
+            `;
+        }
+
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const salesData = getSalesData();
+            renderClientChart(salesData);
+            renderTypeChart(salesData);
+            renderComparisonChart(salesData);
+            renderComparisonTypeChart(salesData);
+            renderSummaryTable();
+        });
+    </script>
+</body>
+</html>
+
