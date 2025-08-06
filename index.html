@@ -58,8 +58,10 @@
             <!-- Stacked Bar Chart by Client -->
             <section id="client-chart-section">
                 <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Ventas Mensuales Totales por Cliente</h2>
-                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
-                    <canvas id="stackedClientChart"></canvas>
+                <div class="overflow-x-auto bg-off-white p-4 rounded-xl border border-gray-200">
+                    <div class="relative h-[500px]" style="min-width: 700px;">
+                        <canvas id="stackedClientChart"></canvas>
+                    </div>
                 </div>
             </section>
 
@@ -68,8 +70,10 @@
             <!-- Stacked Bar Chart by Type -->
             <section id="type-chart-section">
                 <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Ventas Mensuales Totales por Tipo de Producto</h2>
-                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
-                    <canvas id="stackedTypeChart"></canvas>
+                <div class="overflow-x-auto bg-off-white p-4 rounded-xl border border-gray-200">
+                    <div class="relative h-[500px]" style="min-width: 700px;">
+                        <canvas id="stackedTypeChart"></canvas>
+                    </div>
                 </div>
             </section>
 
@@ -78,8 +82,10 @@
              <!-- Comparison Chart: Actual vs Potential by Client -->
             <section id="comparison-chart-section">
                 <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Comparativa por Cliente: Real (Julio 2025) vs. Potencial</h2>
-                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
-                    <canvas id="comparisonChart"></canvas>
+                <div class="overflow-x-auto bg-off-white p-4 rounded-xl border border-gray-200">
+                     <div class="relative h-[500px]" style="min-width: 800px;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
                 </div>
             </section>
 
@@ -88,8 +94,10 @@
              <!-- Comparison Chart: Actual vs Potential by Type -->
             <section id="comparison-type-chart-section">
                 <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Comparativa por Producto: Real vs. Escenarios Potenciales</h2>
-                <div class="h-[500px] w-full bg-off-white p-4 rounded-xl border border-gray-200">
-                    <canvas id="comparisonTypeChart"></canvas>
+                <div class="overflow-x-auto bg-off-white p-4 rounded-xl border border-gray-200">
+                    <div class="relative h-[500px]" style="min-width: 700px;">
+                        <canvas id="comparisonTypeChart"></canvas>
+                    </div>
                 </div>
             </section>
 
@@ -99,7 +107,7 @@
             <section id="data-table-section">
                 <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Resumen de Ventas Potenciales por Cliente y Producto (Ton/Mes)</h2>
                 <div class="overflow-x-auto rounded-lg shadow">
-                    <table class="professional-table w-full text-left">
+                    <table class="professional-table w-full text-left" style="min-width: 800px;">
                         <thead class="bg-dark-indigo text-white">
                             <tr>
                                 <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider w-[22%]">Cliente</th>
@@ -870,4 +878,3 @@
     </script>
 </body>
 </html>
-
