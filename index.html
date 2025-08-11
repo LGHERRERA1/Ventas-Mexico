@@ -316,7 +316,7 @@
 "FEV-00000198","10/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
 "FEV-00000200","11/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
 "FEV-00000203","14/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
-"FEV-00000214","18/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
+"FEV-000001214","18/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
 "FEV-00000217","21/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
 "FEV-00000224","24/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
 "FEV-00000229","28/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
@@ -357,7 +357,10 @@
 "FEV-00000206","15/07/2025","STAR PRODUCTS","ASL-QC01","LAS","2"
 `;
         const summaryData = [
+            // Maquila clients
             { client: 'HJB', maquilaAdbs: 500, maquilaLess: 480, adbs: 0, sles70: 0, sles28: 0, sls: 0 },
+            { client: 'HARMONY CHEM', maquilaAdbs: 60, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 0, sls: 0 },
+            // Non-maquila clients
             { client: 'COLGATE PALMOLIVE', maquilaAdbs: 0, maquilaLess: 0, adbs: 160, sles70: 38, sles28: 0, sls: 416.7 },
             { client: 'AGUAVIENTO', maquilaAdbs: 0, maquilaLess: 0, adbs: 20, sles70: 600, sles28: 0, sls: 0 },
             { client: 'UNILEVER', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 500, sles28: 0, sls: 0 },
@@ -368,9 +371,11 @@
             { client: 'QUIMICA VAID', maquilaAdbs: 0, maquilaLess: 0, adbs: 70, sles70: 0, sles28: 100, sls: 0 },
             { client: 'SAFA', maquilaAdbs: 0, maquilaLess: 0, adbs: 35, sles70: 0, sles28: 35, sls: 0 },
             { client: 'KIMMAR', maquilaAdbs: 0, maquilaLess: 0, adbs: 70, sles70: 0, sles28: 0, sls: 0 },
-            { client: 'HARMONY CHEM', maquilaAdbs: 60, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 0, sls: 0 },
             { client: 'ORBIA', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 0, sls: 41.7 },
-            { client: 'GRUPO HADA', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 40, sles28: 0, sls: 0 }
+            { client: 'GRUPO HADA', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 40, sles28: 0, sls: 0 },
+            // New clients
+            { client: 'CPQ', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 400, sls: 0 },
+            { client: 'GENOMMA LAB', maquilaAdbs: 0, maquilaLess: 0, adbs: 0, sles70: 0, sles28: 400, sls: 0 }
         ];
         
         // --- NEW SCENARIO 2 DATA ---
@@ -401,6 +406,8 @@
             darkIndigo: '#242d62',
             roseTaupe: '#82465c',
             cadetRose: '#c56477',
+            dustyRose: '#d7adbe',
+            mauve: '#ab94b0',
             grey: '#95a5a6',
         };
 
@@ -668,8 +675,19 @@
             const potentialOnlyClients = Object.keys(potentialSalesByClient)
                 .filter(client => !julySalesByClient[client])
                 .sort((a,b) => potentialSalesByClient[b] - potentialSalesByClient[a]);
+            
+            const actualsOnlyClients = Object.keys(julySalesByClient)
+                .filter(client => !potentialSalesByClient[client]);
+
+            let otrosActualTotal = 0;
+            actualsOnlyClients.forEach(client => {
+                otrosActualTotal += julySalesByClient[client];
+            });
 
             const displayOrder = [...commonClients, ...potentialOnlyClients];
+             if (otrosActualTotal > 0) {
+                displayOrder.push('Otros');
+            }
 
             const clientColorMap = {
                 'HJB': colorPalette.skyBlue,
@@ -686,15 +704,24 @@
                 'HARMONY CHEM': colorPalette.indigo,
                 'ORBIA': colorPalette.grey,
                 'GRUPO HADA': colorPalette.dustyRose,
-                'Otros': colorPalette.grey
+                'CPQ': colorPalette.lightSteelBlue,
+                'GENOMMA LAB': colorPalette.mauve,
+                'Otros': colorPalette.grayGreen
             };
             const fallbackColors = Object.values(colorPalette);
             let colorIndex = 0;
 
             const datasets = displayOrder.map(client => {
                 const color = clientColorMap[client] || fallbackColors[colorIndex++ % fallbackColors.length];
-                const actualSales = julySalesByClient[client] || 0;
-                const potentialSales = potentialSalesByClient[client] || 0;
+                let actualSales, potentialSales;
+
+                if (client === 'Otros') {
+                    actualSales = otrosActualTotal;
+                    potentialSales = 0; // "Otros" only exists for actuals not in potential
+                } else {
+                    actualSales = julySalesByClient[client] || 0;
+                    potentialSales = potentialSalesByClient[client] || 0;
+                }
                 
                 return {
                     label: client,
