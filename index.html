@@ -45,6 +45,13 @@
         #summary-table-body tr:nth-child(odd) {
             background-color: #FFFFFF;
         }
+        /* Estilos para la columna de subtotales */
+        #summary-table-body tr:nth-child(odd) .subtotal-cell {
+             background-color: #e5ebdc; /* off-white */
+        }
+        #summary-table-body tr:nth-child(even) .subtotal-cell {
+             background-color: #adb7dc; /* light-steel-blue */
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -81,7 +88,7 @@
             
              <!-- Comparison Chart: Actual vs Potential by Client -->
             <section id="comparison-chart-section">
-                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Comparativa por Cliente: Real (Julio 2025) vs. Potencial</h2>
+                <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Comparativa por Cliente: Real (Agosto 2025) vs. Potencial</h2>
                 <div class="overflow-x-auto bg-off-white p-4 rounded-xl border border-gray-200">
                      <div class="relative h-[500px]" style="min-width: 800px;">
                         <canvas id="comparisonChart"></canvas>
@@ -107,7 +114,7 @@
             <section id="data-table-section">
                 <h2 class="text-2xl font-semibold text-dark-indigo mb-6">Resumen de Ventas Potenciales por Cliente y Producto (Ton/Mes)</h2>
                 <div class="overflow-x-auto rounded-lg shadow">
-                    <table class="professional-table w-full text-left" style="min-width: 800px;">
+                    <table class="professional-table w-full text-left" style="min-width: 900px;">
                         <thead class="bg-dark-indigo text-white">
                             <tr>
                                 <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider w-[22%]">Cliente</th>
@@ -117,13 +124,14 @@
                                 <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">SLES 70</th>
                                 <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">SLES 28</th>
                                 <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right">SLS</th>
+                                <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-right bg-lapis-blue">Subtotal Cliente</th>
                             </tr>
                         </thead>
                         <tbody id="summary-table-body" class="text-gray-700">
                             <!-- JS will populate this -->
                         </tbody>
-                        <tfoot class="bg-periwinkle">
-                           <tr id="summary-table-footer" class="font-bold text-dark-indigo text-base">
+                        <tfoot >
+                           <tr id="summary-table-footer" class="font-bold">
                                 <!-- JS will populate this -->
                            </tr>
                         </tfoot>
@@ -512,7 +520,7 @@
             const sortedClients = Object.keys(clientTotals).sort((a, b) => clientTotals[b] - clientTotals[a]);
             const topClients = sortedClients.slice(0, 8);
 
-            const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6 };
+            const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Ago': 7 };
             const monthKeys = [...new Set(sales.map(sale => {
                 const monthAbbr = sale.Fecha.toLocaleString('es-ES', { month: 'short' }).replace(/\./g, '');
                 return monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1);
@@ -583,7 +591,7 @@
             const typeOrder = ['LAS Maquila', 'LESS 70 Maquila', 'LESS 28', 'LAS', 'LESS 70'];
             const allDefinedTypes = new Set(typeOrder);
 
-            const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6 };
+            const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Ago': 7 };
             const monthKeys = [...new Set(sales.map(sale => {
                 const monthAbbr = sale.Fecha.toLocaleString('es-ES', { month: 'short' }).replace(/\./g, '');
                 return monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1);
@@ -655,8 +663,8 @@
             const ctx = document.getElementById('comparisonChart');
             if (!ctx) return;
 
-            const julySales = sales.filter(s => s.Fecha.getMonth() === 6 && s.Fecha.getFullYear() === 2025);
-            const julySalesByClient = julySales.reduce((acc, sale) => {
+            const augustSales = sales.filter(s => s.Fecha.getMonth() === 7 && s.Fecha.getFullYear() === 2025);
+            const augustSalesByClient = augustSales.reduce((acc, sale) => {
                 acc[sale.Cliente] = (acc[sale.Cliente] || 0) + sale.Ton;
                 return acc;
             }, {});
@@ -669,19 +677,19 @@
             });
 
             const commonClients = Object.keys(potentialSalesByClient)
-                .filter(client => julySalesByClient[client])
+                .filter(client => augustSalesByClient[client])
                 .sort((a,b) => potentialSalesByClient[b] - potentialSalesByClient[a]);
             
             const potentialOnlyClients = Object.keys(potentialSalesByClient)
-                .filter(client => !julySalesByClient[client])
+                .filter(client => !augustSalesByClient[client])
                 .sort((a,b) => potentialSalesByClient[b] - potentialSalesByClient[a]);
             
-            const actualsOnlyClients = Object.keys(julySalesByClient)
+            const actualsOnlyClients = Object.keys(augustSalesByClient)
                 .filter(client => !potentialSalesByClient[client]);
 
             let otrosActualTotal = 0;
             actualsOnlyClients.forEach(client => {
-                otrosActualTotal += julySalesByClient[client];
+                otrosActualTotal += augustSalesByClient[client];
             });
 
             const displayOrder = [...commonClients, ...potentialOnlyClients];
@@ -719,7 +727,7 @@
                     actualSales = otrosActualTotal;
                     potentialSales = 0; // "Otros" only exists for actuals not in potential
                 } else {
-                    actualSales = julySalesByClient[client] || 0;
+                    actualSales = augustSalesByClient[client] || 0;
                     potentialSales = potentialSalesByClient[client] || 0;
                 }
                 
@@ -731,7 +739,7 @@
             });
 
             const chartData = {
-                labels: ['Ventas Reales (Julio 2025)', 'Ventas Potenciales (Objetivo)'],
+                labels: ['Ventas Reales (Agosto 2025)', 'Ventas Potenciales (Objetivo)'],
                 datasets: datasets
             };
 
@@ -768,14 +776,14 @@
             const ctx = document.getElementById('comparisonTypeChart');
             if (!ctx) return;
 
-            const julySales = sales.filter(s => s.Fecha.getMonth() === 6 && s.Fecha.getFullYear() === 2025);
+            const augustSales = sales.filter(s => s.Fecha.getMonth() === 7 && s.Fecha.getFullYear() === 2025);
             
             const actuals = {
-                'maquila ADBS': julySales.filter(s => s.TIPO === 'LAS Maquila').reduce((sum, s) => sum + s.Ton, 0),
-                'maquila LESS': julySales.filter(s => s.TIPO === 'LESS 70 Maquila').reduce((sum, s) => sum + s.Ton, 0),
-                'ADBS': julySales.filter(s => s.TIPO === 'LAS').reduce((sum, s) => sum + s.Ton, 0),
-                'SLES 70': julySales.filter(s => s.TIPO === 'LESS 70').reduce((sum, s) => sum + s.Ton, 0),
-                'SLES 28': julySales.filter(s => s.TIPO === 'LESS 28').reduce((sum, s) => sum + s.Ton, 0),
+                'maquila ADBS': augustSales.filter(s => s.TIPO === 'LAS Maquila').reduce((sum, s) => sum + s.Ton, 0),
+                'maquila LESS': augustSales.filter(s => s.TIPO === 'LESS 70 Maquila').reduce((sum, s) => sum + s.Ton, 0),
+                'ADBS': augustSales.filter(s => s.TIPO === 'LAS').reduce((sum, s) => sum + s.Ton, 0),
+                'SLES 70': augustSales.filter(s => s.TIPO === 'LESS 70').reduce((sum, s) => sum + s.Ton, 0),
+                'SLES 28': augustSales.filter(s => s.TIPO === 'LESS 28').reduce((sum, s) => sum + s.Ton, 0),
                 'SLS': 0
             };
 
@@ -815,7 +823,7 @@
             });
 
             const chartData = {
-                labels: ['Ventas Reales (Julio 2025)', 'Escenario 2 (Inversión)', 'Ventas Potenciales (Objetivo)'],
+                labels: ['Ventas Reales (Agosto 2025)', 'Escenario 2 (Inversión)', 'Ventas Potenciales (Objetivo)'],
                 datasets: datasets
             };
 
@@ -862,6 +870,7 @@
                     return totalB - totalA;
                 })
                 .map(row => {
+                    const subtotal = row.maquilaAdbs + row.maquilaLess + row.adbs + row.sles70 + row.sles28 + row.sls;
                     totalMaquilaAdbs += row.maquilaAdbs;
                     totalMaquilaLess += row.maquilaLess;
                     totalAdbs += row.adbs;
@@ -878,30 +887,69 @@
                         <td class="px-4 py-2 text-right">${Math.round(row.sles70).toLocaleString()}</td>
                         <td class="px-4 py-2 text-right">${Math.round(row.sles28).toLocaleString()}</td>
                         <td class="px-4 py-2 text-right">${Math.round(row.sls).toLocaleString()}</td>
+                        <td class="px-4 py-2 text-right font-bold subtotal-cell">${Math.round(subtotal).toLocaleString()}</td>
                     </tr>
                 `}).join('');
+            
+            const grandTotal = totalMaquilaAdbs + totalMaquilaLess + totalAdbs + totalSles70 + totalSles28 + totalSls;
 
             tableFooter.innerHTML = `
-                <td class="p-4">Total</td>
-                <td class="p-4 text-right">${Math.round(totalMaquilaAdbs).toLocaleString()}</td>
-                <td class="p-4 text-right">${Math.round(totalMaquilaLess).toLocaleString()}</td>
-                <td class="p-4 text-right">${Math.round(totalAdbs).toLocaleString()}</td>
-                <td class="p-4 text-right">${Math.round(totalSles70).toLocaleString()}</td>
-                <td class="p-4 text-right">${Math.round(totalSles28).toLocaleString()}</td>
-                <td class="p-4 text-right">${Math.round(totalSls).toLocaleString()}</td>
+                <td class="p-4 bg-mauve text-dark-indigo">Total</td>
+                <td class="p-4 text-right bg-mauve text-dark-indigo">${Math.round(totalMaquilaAdbs).toLocaleString()}</td>
+                <td class="p-4 text-right bg-mauve text-dark-indigo">${Math.round(totalMaquilaLess).toLocaleString()}</td>
+                <td class="p-4 text-right bg-mauve text-dark-indigo">${Math.round(totalAdbs).toLocaleString()}</td>
+                <td class="p-4 text-right bg-mauve text-dark-indigo">${Math.round(totalSles70).toLocaleString()}</td>
+                <td class="p-4 text-right bg-mauve text-dark-indigo">${Math.round(totalSles28).toLocaleString()}</td>
+                <td class="p-4 text-right bg-mauve text-dark-indigo">${Math.round(totalSls).toLocaleString()}</td>
+                <td class="p-4 text-right font-bold bg-rose-taupe text-white">${Math.round(grandTotal).toLocaleString()}</td>
             `;
         }
 
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            const salesData = getSalesData();
-            renderClientChart(salesData);
-            renderTypeChart(salesData);
-            renderComparisonChart(salesData);
-            renderComparisonTypeChart(salesData);
+            const originalSales = getSalesData();
+            const augustSalesRaw = [
+                { client: 'AGUAVIENTO', type: 'LAS', tons: 10 },
+                { client: 'ALEN', type: 'LAS', tons: 150 },
+                { client: 'QUIMICA ANFA', type: 'LAS', tons: 10 },
+                { client: 'QUIMICA ANFA', type: 'LESS 28', tons: 140 },
+                { client: 'BEAUTY ARMOUR', type: 'LAS', tons: 40 },
+                { client: 'BEAUTY ARMOUR', type: 'LESS 28', tons: 245 },
+                { client: 'CARE SAGA', type: 'LESS 28', tons: 30 },
+                { client: 'CQ CENTENARIO', type: 'LAS', tons: 40 },
+                { client: 'ECJ', type: 'LAS', tons: 15 },
+                { client: 'ECJ', type: 'LESS 28', tons: 135 },
+                { client: 'HARMONY CHEM', type: 'LAS Maquila', tons: 95 },
+                { client: 'HJB', type: 'LAS Maquila', tons: 100 },
+                { client: 'HJB', type: 'LESS 70 Maquila', tons: 275 },
+                { client: 'QUIMICA PLATA', type: 'LAS', tons: 20 },
+                { client: 'UNILEVER', type: 'LESS 70', tons: 2 },
+                { client: 'QUIMICA VAID', type: 'LAS', tons: 50 },
+                { client: 'QUIMICA VAID', type: 'LESS 28', tons: 35 },
+                { client: 'SAFA', type: 'LAS', tons: 10 },
+                { client: 'SAFA', type: 'LESS 28', tons: 35 },
+                { client: 'MCHEMICALS', type: 'LAS', tons: 70 }
+            ];
+
+            const augustSalesData = augustSalesRaw.map(sale => ({
+                "Nro documento": `AUG-SALE-${Math.random()}`,
+                "Fecha": new Date(2025, 7, 1), // August is month 7 (0-indexed)
+                "Cliente": normalizeClientName(sale.client),
+                "Referencia": "N/A",
+                "TIPO": sale.type,
+                "Ton": sale.tons
+            }));
+
+            const allSalesData = [...originalSales, ...augustSalesData];
+
+            renderClientChart(allSalesData);
+            renderTypeChart(allSalesData);
+            renderComparisonChart(allSalesData);
+            renderComparisonTypeChart(allSalesData);
             renderSummaryTable();
         });
     </script>
 </body>
 </html>
+
