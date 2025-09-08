@@ -142,7 +142,7 @@
     </div>
 
     <script>
-        // Raw CSV data provided by the user
+        // Raw CSV data provided by the user, including actual August data
         const csvData = `
 "Nro documento","Fecha","Cliente","Referencia","TIPO","Ton"
 "FEV-00000001","17/01/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","10"
@@ -308,49 +308,49 @@
 "FEV-00000208","16/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
 "FEV-00000225","25/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
 "FEV-00000233","30/07/2025","ALEN DEL NORTE","ASL-QC01","LAS","20"
-"FEV-00000185","3/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
-"FEV-00000188","7/07/2025","BEAUTY ARMOUR","ASL-QC01","LAS","20"
-"FEV-00000190","7/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
-"FEV-00000205","15/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
-"FEV-00000211","17/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","36"
-"FEV-00000221","22/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
-"FEV-00000226","25/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
-"FEV-00000228","28/07/2025","BEAUTY ARMOUR","ASL-QC01","LAS","20"
-"FEV-00000236","31/07/2025","BEAUTY ARMOUR","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000185","3/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000188","7/07/2025","BEAUTY ARMOUR TRADING","ASL-QC01","LAS","20"
+"FEV-00000190","7/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000205","15/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000211","17/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","36"
+"FEV-00000221","22/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000226","25/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35"
+"FEV-00000228","28/07/2025","BEAUTY ARMOUR TRADING","ASL-QC01","LAS","20"
+"FEV-00000236","31/07/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35"
 "FEV-00000195","9/07/2025","CQ CENTENARIO","ASL-QC01","LAS","20"
 "FEV-00000215","21/07/2025","CQ CENTENARIO","ASL-QC01","LAS","20"
 "FEV-00000231","29/07/2025","CQ CENTENARIO","ASL-QC01","LAS","15"
-"FEV-00000183","3/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
-"FEV-00000198","10/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
-"FEV-00000200","11/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
-"FEV-00000203","14/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
-"FEV-000001214","18/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
-"FEV-00000217","21/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
-"FEV-00000224","24/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","15"
-"FEV-00000229","28/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
-"FEV-00000237","31/07/2025","ECJ","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000183","3/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000198","10/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000200","11/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000203","14/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000214","18/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000217","21/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000224","24/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","15"
+"FEV-00000229","28/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18"
+"FEV-00000237","31/07/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18"
 "FEV-00000230","29/07/2025","GRUPO AGUAVIENTO","ASL-QC01","LAS","10"
 "FEV-00000179","2/07/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","36"
 "FEV-00000181","3/07/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","36"
-"FEV-00000180","2/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
-"FEV-00000182","3/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000184","3/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
-"FEV-00000186","4/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000191","8/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000192","8/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000193","8/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
-"FEV-00000194","9/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000196","9/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","13"
-"FEV-00000199","10/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000201","11/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000202","14/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000204","14/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000207","15/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000216","21/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
-"FEV-00000219","22/07/2025","HJB","ASL-MHJB","LAS Maquila","35"
-"FEV-00000220","22/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","35"
-"FEV-00000222","23/07/2025","HJB","ASL-MHJB","LAS Maquila","21"
-"FEV-00000223","23/07/2025","HJB","SULPHEX-702-MHJB","LESS 70 Maquila","12"
+"FEV-00000180","2/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000182","3/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000184","3/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000186","4/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000191","8/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000192","8/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000193","8/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000194","9/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000196","9/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","13"
+"FEV-00000199","10/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000201","11/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000202","14/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000204","14/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000207","15/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000216","21/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000219","22/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35"
+"FEV-00000220","22/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35"
+"FEV-00000222","23/07/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","21"
+"FEV-00000223","23/07/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","12"
 "FEV-00000197","10/07/2025","PRODUCTOS KIMIMAR","ASL-QC01","LAS","35"
 "FEV-00000178","2/07/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
 "FEV-00000189","7/07/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35"
@@ -363,6 +363,67 @@
 "FEV-00000235","31/07/2025","QUIMICA VAID","ASL-QC01","LAS","15"
 "FEV-00000232","29/07/2025","SAFA","SULPHEX-282-N-D","LESS 28","35"
 "FEV-00000206","15/07/2025","STAR PRODUCTS","ASL-QC01","LAS","2"
+"FEV-00000238","1/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","16.0"
+"FEV-00000239","4/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","15.0"
+"FEV-00000240","4/08/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35.0"
+"FEV-00000241","4/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","20.1"
+"FEV-00000242","5/08/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","34.9"
+"FEV-00000243","6/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18.1"
+"FEV-00000244","7/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","5.0"
+"FEV-00000245","8/08/2025","UNILEVER DE MEXICO","SULPHEX-701-N-G","LESS 70 1M","2.4"
+"FEV-00000246","8/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","15.1"
+"FEV-00000247","9/08/2025","BEAUTY ARMOUR TRADING","ASL-QC01","LAS","20.0"
+"FEV-00000248","9/08/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35.1"
+"FEV-00000249","11/08/2025","QUIMICA VAID","ASL-QC01","LAS","20.0"
+"FEV-00000250","11/08/2025","QUIMICA ANFA","ASL-QC01","LAS","10.0"
+"FEV-00000251","11/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","5.0"
+"FEV-00000252","11/08/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35.0"
+"FEV-00000253","12/08/2025","ECJ DISTRIBUIDORA MEXICANA","ASL-QC01","LAS","15.0"
+"FEV-00000254","12/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","20.0"
+"FEV-00000255","12/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","5.0"
+"FEV-00000256","12/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35.2"
+"FEV-00000257","12/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18.0"
+"FEV-00000258","13/08/2025","COMPUESTOS QUIMICOS CENTENARIO","ASL-QC01","LAS","19.9"
+"FEV-00000259","13/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","16.1"
+"FEV-00000260","13/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","5.0"
+"FEV-00000261","13/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35.0"
+"FEV-00000262","14/08/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","35.1"
+"FEV-00000263","14/08/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35.1"
+"FEV-00000264","15/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","5.0"
+"FEV-00000265","16/08/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","16.0"
+"FEV-00000266","16/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35.4"
+"FEV-00000267","16/08/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","33.7"
+"FEV-00000268","18/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","20.0"
+"FEV-00000269","18/08/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35.1"
+"FEV-00000270","18/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","34.9"
+"FEV-00000271","18/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18.2"
+"FEV-00000272","19/08/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","35.1"
+"FEV-00000273","19/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35.2"
+"FEV-00000274","20/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","16.0"
+"FEV-00000275","20/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","35.1"
+"FEV-00000276","21/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","15.1"
+"FEV-00000277","22/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18.1"
+"FEV-00000278","22/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","3.0"
+"FEV-00000279","22/08/2025","HJB QUIMICA INTERNACIONAL","SULPHEX-702-MHJB","LESS 70 Maquila","34.7"
+"FEV-00000280","23/08/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","15.0"
+"FEV-00000281","23/08/2025","BEAUTY ARMOUR TRADING","ASL-QC01","LAS","20.1"
+"FEV-00000282","25/08/2025","HARMONY CHEM","ASL-MHARMONY","LAS Maquila","35.0"
+"FEV-00000283","25/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","20.0"
+"FEV-00000284","25/08/2025","ECJ DISTRIBUIDORA MEXICANA","ASL-QC01","LAS","15.0"
+"FEV-00000285","26/08/2025","COMPUESTOS QUIMICOS CENTENARIO","ASL-QC01","LAS","18.0"
+"FEV-00000286","26/08/2025","ECJ DISTRIBUIDORA MEXICANA","SULPHEX-282-N-D","LESS 28","18.0"
+"FEV-00000287","26/08/2025","QUIMICA ANFA","SULPHEX-282-N-D","LESS 28","35.1"
+"FEV-00000288","27/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","2.0"
+"FEV-00000289","27/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","3.0"
+"FEV-00000290","27/08/2025","BEAUTY ARMOUR TRADING","SULPHEX-282-N-D","LESS 28","35.0"
+"FEV-00000291","27/08/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35.1"
+"FEV-00000292","28/08/2025","QUIMICA VAID","ASL-QC01","LAS","20.0"
+"FEV-00000293","28/08/2025","CARE SAGA MEXICO","SULPHEX-282-N-D","LESS 28","5.0"
+"FEV-00000294","28/08/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35.0"
+"FEV-00000295","29/08/2025","ALEN DEL NORTE","ASL-QC01","LAS","16.0"
+"FEV-00000296","29/08/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35.0"
+"FEV-00000297","30/08/2025","HJB QUIMICA INTERNACIONAL","ASL-MHJB","LAS Maquila","35.1"
+"NEC-00000006","28/08/2025","UNILEVER DE MEXICO","SULPHEX-701-N-G","LESS 70 1M","-0.2"
 `;
         const summaryData = [
             // Maquila clients
@@ -425,9 +486,15 @@
         function normalizeClientName(name) {
             const nameMap = {
                 'ALEN DEL NORTE': 'ALEN',
+                'ECJ DISTRIBUIDORA MEXICANA': 'ECJ',
+                'BEAUTY ARMOUR TRADING': 'BEAUTY ARMOUR',
+                'CARE SAGA MEXICO': 'CARE SAGA',
+                'UNILEVER DE MEXICO': 'UNILEVER',
+                'HJB QUIMICA INTERNACIONAL': 'HJB',
+                'COMPUESTOS QUIMICOS CENTENARIO': 'CQ CENTENARIO',
                 'GRUPO ALEN': 'ALEN',
                 'GRUPO AGUAVIENTO': 'AGUAVIENTO',
-                'PRODUCTOS KIMIMAR': 'KIMMAR'
+                'PRODUCTOS KIMIMAR': 'KIMMAR',
             };
             return nameMap[name] || name;
         }
@@ -487,28 +554,51 @@
          * Generic data processing function.
          */
         function getSalesData() {
-             const rows = csvData.trim().split('\n');
-            const headers = rows[0].split(',').map(h => h.replace(/"/g, ''));
-            const dataRows = rows.slice(1);
-            return dataRows.map(row => {
-                const values = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(v => v.replace(/"/g, ''));
-                const entry = {};
-                headers.forEach((header, i) => {
-                    let value = values[i];
-                    if (header === 'Ton') value = parseFloat(value) || 0;
-                    else if (header === 'Fecha') value = parseDate(value);
-                    else if (header === 'Cliente') value = normalizeClientName(values[i]);
-                    else value = values[i];
-                    entry[header] = value;
-                });
-                return entry;
+            const rows = csvData.trim().split('\n');
+            const headerRowText = rows.shift();
+            // Handle cases where the header might be missing or empty
+            if (!headerRowText) return [];
+
+            const headers = headerRowText.replace(/"/g, '').split(',');
+            
+            // Find column indices robustly
+            const columnMap = {};
+            const requiredCols = ['cliente', 'fecha', 'tipo', 'ton'];
+            headers.forEach((h, i) => {
+                const lowerH = h.toLowerCase().trim();
+                if (lowerH.includes('cliente')) columnMap.cliente = i;
+                if (lowerH.includes('fecha')) columnMap.fecha = i;
+                if (lowerH.includes('tipo')) columnMap.tipo = i;
+                if (lowerH.includes('ton')) columnMap.ton = i;
             });
+
+            if(requiredCols.some(key => columnMap[key] === undefined)) {
+                console.error("CSV headers are missing required columns:", headers);
+                return []; // Return empty if essential columns are missing
+            }
+
+            return rows.map(row => {
+                const values = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/"/g, '')) || [];
+                if (values.length < headers.length) return null;
+
+                const tonString = (values[columnMap.ton] || '0').replace(',', '.');
+                
+                return {
+                    Cliente: normalizeClientName(values[columnMap.cliente] || 'Desconocido'),
+                    Fecha: parseDate(values[columnMap.fecha] || '1/1/1970'),
+                    TIPO: (values[columnMap.tipo] || 'Otros').trim(),
+                    Ton: parseFloat(tonString) || 0,
+                };
+            }).filter(Boolean);
         }
         
         /**
          * Renders the chart for sales by client.
          */
         function renderClientChart(sales) {
+            if (stackedClientChart) {
+                stackedClientChart.destroy();
+            }
             const ctx = document.getElementById('stackedClientChart');
             if (!ctx) return;
 
@@ -585,10 +675,13 @@
          * Renders the chart for sales by product type.
          */
         function renderTypeChart(sales) {
+            if (stackedTypeChart) {
+                stackedTypeChart.destroy();
+            }
             const ctx = document.getElementById('stackedTypeChart');
             if (!ctx) return;
 
-            const typeOrder = ['LAS Maquila', 'LESS 70 Maquila', 'LESS 28', 'LAS', 'LESS 70'];
+            const typeOrder = ['LAS Maquila', 'LESS 70 Maquila', 'LESS 28', 'LAS', 'LESS 70', 'LESS 70 1M'];
             const allDefinedTypes = new Set(typeOrder);
 
             const monthOrder = { 'Ene': 0, 'Feb': 1, 'Mar': 2, 'Abr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Ago': 7 };
@@ -617,7 +710,8 @@
                 colorPalette.skyBlue, 
                 colorPalette.turquoise, 
                 colorPalette.oliveGreen, 
-                colorPalette.sageGreen
+                colorPalette.sageGreen,
+                colorPalette.lapisBlue
             ];
             
             const datasets = Object.keys(typeDataMap).map((type, i) => {
@@ -657,9 +751,12 @@
         }
         
         /**
-         * Renders the comparison chart: Actual July sales vs Potential sales by Client.
+         * Renders the comparison chart: Actual August sales vs Potential sales by Client.
          */
         function renderComparisonChart(sales) {
+            if (comparisonChart) {
+                comparisonChart.destroy();
+            }
             const ctx = document.getElementById('comparisonChart');
             if (!ctx) return;
 
@@ -773,6 +870,9 @@
          * Renders the comparison chart by product type.
          */
         function renderComparisonTypeChart(sales) {
+            if(comparisonTypeChart) {
+                comparisonTypeChart.destroy();
+            }
             const ctx = document.getElementById('comparisonTypeChart');
             if (!ctx) return;
 
@@ -782,7 +882,7 @@
                 'maquila ADBS': augustSales.filter(s => s.TIPO === 'LAS Maquila').reduce((sum, s) => sum + s.Ton, 0),
                 'maquila LESS': augustSales.filter(s => s.TIPO === 'LESS 70 Maquila').reduce((sum, s) => sum + s.Ton, 0),
                 'ADBS': augustSales.filter(s => s.TIPO === 'LAS').reduce((sum, s) => sum + s.Ton, 0),
-                'SLES 70': augustSales.filter(s => s.TIPO === 'LESS 70').reduce((sum, s) => sum + s.Ton, 0),
+                'SLES 70': augustSales.filter(s => s.TIPO === 'LESS 70' || s.TIPO === 'LESS 70 1M').reduce((sum, s) => sum + s.Ton, 0),
                 'SLES 28': augustSales.filter(s => s.TIPO === 'LESS 28').reduce((sum, s) => sum + s.Ton, 0),
                 'SLS': 0
             };
@@ -908,41 +1008,10 @@
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            const originalSales = getSalesData();
-            const augustSalesRaw = [
-                { client: 'AGUAVIENTO', type: 'LAS', tons: 10 },
-                { client: 'ALEN', type: 'LAS', tons: 150 },
-                { client: 'QUIMICA ANFA', type: 'LAS', tons: 10 },
-                { client: 'QUIMICA ANFA', type: 'LESS 28', tons: 140 },
-                { client: 'BEAUTY ARMOUR', type: 'LAS', tons: 40 },
-                { client: 'BEAUTY ARMOUR', type: 'LESS 28', tons: 245 },
-                { client: 'CARE SAGA', type: 'LESS 28', tons: 30 },
-                { client: 'CQ CENTENARIO', type: 'LAS', tons: 40 },
-                { client: 'ECJ', type: 'LAS', tons: 15 },
-                { client: 'ECJ', type: 'LESS 28', tons: 135 },
-                { client: 'HARMONY CHEM', type: 'LAS Maquila', tons: 95 },
-                { client: 'HJB', type: 'LAS Maquila', tons: 100 },
-                { client: 'HJB', type: 'LESS 70 Maquila', tons: 275 },
-                { client: 'QUIMICA PLATA', type: 'LAS', tons: 20 },
-                { client: 'UNILEVER', type: 'LESS 70', tons: 2 },
-                { client: 'QUIMICA VAID', type: 'LAS', tons: 50 },
-                { client: 'QUIMICA VAID', type: 'LESS 28', tons: 35 },
-                { client: 'SAFA', type: 'LAS', tons: 10 },
-                { client: 'SAFA', type: 'LESS 28', tons: 35 },
-                { client: 'MCHEMICALS', type: 'LAS', tons: 70 }
-            ];
-
-            const augustSalesData = augustSalesRaw.map(sale => ({
-                "Nro documento": `AUG-SALE-${Math.random()}`,
-                "Fecha": new Date(2025, 7, 1), // August is month 7 (0-indexed)
-                "Cliente": normalizeClientName(sale.client),
-                "Referencia": "N/A",
-                "TIPO": sale.type,
-                "Ton": sale.tons
-            }));
-
-            const allSalesData = [...originalSales, ...augustSalesData];
-
+            // Add a mechanism to re-render charts when data changes
+            const allSalesData = getSalesData();
+            
+            // Initial render
             renderClientChart(allSalesData);
             renderTypeChart(allSalesData);
             renderComparisonChart(allSalesData);
